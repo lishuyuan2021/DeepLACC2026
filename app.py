@@ -69,19 +69,19 @@ with st.sidebar:
     
     st.header("2. Clinical & Diagnosis")
     therapy = st.selectbox("Adjuvant Chemotherapy", ["Untreated", "Treated"])
-    cea = st.selectbox("CEA Level Status", ["Negative (<5 ng/ml)", "Positive (≥5 ng/ml)"])
+    cea = st.selectbox("CEA Level Status", ["Negative (≤5 ng/ml)", "Positive (>5 ng/ml)"])
     pni = st.selectbox("Perineural Invasion (PNI)", ["Negative (No)", "Positive (Yes)"])
     deposits = st.selectbox("Tumor Deposits (TD)", ["Negative (No)", "Positive (Yes)"])
     
     st.header("3. Surgical Pathology")
     nodes_pos = st.number_input("Number of Positive Lymph Nodes", 0, 50, 1)
-    nodes_exam = st.number_input("Nodes Examined Count", 1, 100, 15)
-    tn_stage = st.selectbox("Post-neoadjuvant / Combined Stage", [
+    nodes_exam = st.number_input("Number of Lymph Nodes Removed", 1, 100, 15)
+    tn_stage = st.selectbox("Combined Stage", [
         "pT4N+", "pT4N0", "ypT0-2N+", "ypT0-2N0", "ypT3N+", "ypT3N0", "ypT4N+", "ypT4N0"
     ])
     
     grade = st.selectbox("Histological Grade", ["Well differentiated (GI)", "Moderately differentiated (GII)", "Poorly/Undifferentiated (GIII/IV)"])
-    site = st.selectbox("Primary Tumor Site", ["Cecum/Others", "Ascending Colon", "Hepatic Flexure", "Transverse Colon", 
+    site = st.selectbox("Primary Tumor Site", ["Cecum", "Ascending Colon", "Hepatic Flexure", "Transverse Colon", 
                                               "Splenic Flexure", "Descending Colon", "Sigmoid Colon", "Rectosigmoid Junction"])
     
     st.header("4. History")

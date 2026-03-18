@@ -1,7 +1,20 @@
-import matplotlib.font_manager as fm
+import os  # <--- 必须确保这一行在最前面
+import streamlit as st
+import torch
+import torch.nn as nn
+import pandas as pd
+import numpy as np
+import shap
+import matplotlib.pyplot as plt
+import platform
 
-# 获取当前路径
+# 下面才能开始使用 os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 解决环境冲突补丁
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+import matplotlib.font_manager as fm
 
 # 针对服务器端中文乱码的终极补丁
 font_path = os.path.join(BASE_DIR, 'SimHei.ttf') # 确保你的 GitHub 仓库里传了这个 ttf 文件
@@ -15,16 +28,6 @@ if os.path.exists(font_path):
 else:
     # 备选
     plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
-
-import streamlit as st
-import torch
-import torch.nn as nn
-import pandas as pd
-import numpy as np
-import shap
-import matplotlib.pyplot as plt
-import os
-import platform
 
 # ==============================================================================
 # 0. 绘图符号与中文彻底修复补丁
@@ -110,7 +113,7 @@ with st.sidebar:
     
     st.header("2. 临床诊断与分期")
     therapy_cn = st.selectbox("术后辅助化疗 (AC)", ["不接受/拒绝", "接受"])
-    cea_cn = st.selectbox("CEA 状态 (术前)", ["阴性 (<5 ng/ml)", "阳性 (≥5 ng/ml)"])
+    cea_cn = st.selectbox("CEA 状态 (术前)", ["阴性 (≤5 ng/ml)", "阳性 (>5 ng/ml)"])
     pni_cn = st.selectbox("神经侵犯 (PNI)", ["无 (No)", "有 (Yes)"])
     deposits_cn = st.selectbox("癌结节 (TD)", ["无 (Negative)", "有 (Positive)"])
     
@@ -122,7 +125,7 @@ with st.sidebar:
     ])
     
     grade_cn = st.selectbox("分化等级 (Grade)", ["高分化 (Grade I)", "中分化 (Grade II)", "低分化/未分化 (GIII/IV)"])
-    site_cn = st.selectbox("肿瘤原发部位", ["盲肠/其他", "升结肠", "结肠肝曲", "横结肠", 
+    site_cn = st.selectbox("肿瘤原发部位", ["盲肠", "升结肠", "结肠肝曲", "横结肠", 
                                         "结肠脾曲", "降结肠", "乙状结肠", "直乙交界部"])
     
     st.header("4. 病史特征")
