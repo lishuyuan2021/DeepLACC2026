@@ -64,64 +64,58 @@ st.markdown("Individualized risk calculation powered by **Native PyTorch DeepSur
 
 with st.sidebar:
     st.header("1. Demographics")
-    age = st.slider("Age at diagnosis", 18, 85, 60)
+    age = st.slider("Age at diagnosis", 18, 79, 60)
     race = st.selectbox("Race", ["Asian/Pacific Islander", "White", "Black", "American Indian/Alaska Native"])
     
-    st.header("2. Clinical & Diagnosis")
-    therapy = st.selectbox("Adjuvant Chemotherapy", ["Untreated", "Treated"])
-    cea = st.selectbox("CEA Level Status", ["Negative (≤5 ng/ml)", "Positive (>5 ng/ml)"])
-    pni = st.selectbox("Perineural Invasion (PNI)", ["Negative (No)", "Positive (Yes)"])
-    deposits = st.selectbox("Tumor Deposits (TD)", ["Negative (No)", "Positive (Yes)"])
+    st.header("2. Diagnosis & Pathology")
+    therapy = st.selectbox("Adjuvant Chemotherapy (AC)", ["Untreated", "Treated"])
+    cea = st.selectbox("CEA Status (Pre-op)", ["Negative", "Positive"])
+    pni = st.selectbox("Perineural Invasion (PNI)", ["No", "Yes"])
+    deposits = st.selectbox("Tumor Deposits (TD)", ["No", "Yes"])
     
-    st.header("3. Surgical Pathology")
-    nodes_pos = st.number_input("Number of Positive Lymph Nodes", 0, 50, 1)
-    nodes_exam = st.number_input("Number of Lymph Nodes Removed", 1, 100, 15)
-    tn_stage = st.selectbox("Combined Stage", [
+    st.header("3. Surgical Stage")
+    nodes_pos = st.number_input("Number of Positive Nodes", 0, 80, 1)
+    nodes_exam = st.number_input("Total Examined Nodes", 1, 90, 15)
+    tn_stage = st.selectbox("TNM Combined Stage", [
         "pT4N+", "pT4N0", "ypT0-2N+", "ypT0-2N0", "ypT3N+", "ypT3N0", "ypT4N+", "ypT4N0"
     ])
-    
-    grade = st.selectbox("Histological Grade", ["Well differentiated (GI)", "Moderately differentiated (GII)", "Poorly/Undifferentiated (GIII/IV)"])
-    site = st.selectbox("Primary Tumor Site", ["Cecum", "Ascending Colon", "Hepatic Flexure", "Transverse Colon", 
-                                              "Splenic Flexure", "Descending Colon", "Sigmoid Colon", "Rectosigmoid Junction"])
+    grade = st.selectbox("Histological Grade", ["Grade I (Well)", "Grade II (Moderate)", "Grade III/IV (Poor)"])
+    site = st.selectbox("Primary Site", ["Cecum/Others", "Ascending Colon", "Hepatic Flexure", "Transverse Colon", 
+                                        "Splenic Flexure", "Descending Colon", "Sigmoid Colon", "Rectosigmoid Junction"])
     
     st.header("4. History")
-    primary_only = st.selectbox("Only one primary tumor site?", ["Yes", "No"])
-    first_malig = st.selectbox("Was colon cancer the patient's first primary cancer?", ["Yes", "No"])
+    primary_only = st.selectbox("Is this the ONLY primary site?", ["Yes", "No"])
+    first_malig = st.selectbox("Was colon cancer the first primary cancer in lifetime?", ["Yes", "No"])
 
-# ==============================================================================
-# 4. Prognosis Prediction Logic
-# ==============================================================================
+# 执行预测 (严格字符对齐)
 if st.sidebar.button("🚀 Analyze Survival Risk", type="primary"):
     input_vec = np.zeros(28)
-    
-    # Scaling and One-Hot Mapping
     input_vec[0] = (age - scalers.loc['age', 'mean']) / scalers.loc['age', 'sd']
-    
     if race == "White": input_vec[1] = 1
     elif race == "Black": input_vec[2] = 1
     elif race == "American Indian/Alaska Native": input_vec[3] = 1
     
+    # 修正逻辑：必须匹配 Treated / Positive
     if therapy == "Treated": input_vec[4] = 1
-    if cea == "Positive (≥5 ng/ml)": input_vec[5] = 1
+    if cea == "Positive": input_vec[5] = 1
     
-    site_map = {"Ascending Colon": 6, "Hepatic Flexure": 7, "Transverse Colon": 8, "Splenic Flexure": 9, 
-                "Descending Colon": 10, "Sigmoid Colon": 11, "Rectosigmoid Junction": 12}
+    site_map = {"Ascending Colon": 6, "Hepatic Flexure": 7, "Transverse Colon": 8, "Splenic Flexure": 9, "Descending Colon": 10, "Sigmoid Colon": 11, "Rectosigmoid Junction": 12}
     if site in site_map: input_vec[site_map[site]] = 1
     
-    # Match History Logic (If Yes = Single/First -> Index gets 1)
+    # 修正：Yes 映射为 1
     if primary_only == "Yes": input_vec[13] = 1
     if first_malig == "Yes": input_vec[14] = 1
     
-    if deposits == "Positive (Yes)": input_vec[15] = 1
+    if deposits == "Yes": input_vec[15] = 1
     input_vec[16] = (nodes_pos - scalers.loc['regional.nodes.positive', 'mean']) / scalers.loc['regional.nodes.positive', 'sd']
-    if pni == "Positive (Yes)": input_vec[17] = 1
+    if pni == "Yes": input_vec[17] = 1
     input_vec[18] = (nodes_exam - scalers.loc['regional.nodes.examined', 'mean']) / scalers.loc['regional.nodes.examined', 'sd']
     
     tn_map = {"pT4N0": 19, "ypT0-2N+": 20, "ypT0-2N0": 21, "ypT3N+": 22, "ypT3N0": 23, "ypT4N+": 24, "ypT4N0": 25}
     if tn_stage in tn_map: input_vec[tn_map[tn_stage]] = 1
     
-    if grade == "Moderately differentiated (GII)": input_vec[26] = 1
-    elif grade == "Poorly/Undifferentiated (GIII/IV)": input_vec[27] = 1
+    if grade == "Grade II (Moderate)": input_vec[26] = 1
+    elif grade == "Grade III/IV (Poor)": input_vec[27] = 1
 
     input_tensor = torch.from_numpy(input_vec).float().view(1, -1)
     with torch.no_grad():
