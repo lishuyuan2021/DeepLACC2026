@@ -115,7 +115,7 @@ if st.sidebar.button("🚀 点击分析预后", type="primary"):
     elif race_cn == "黑种人": input_vec[2] = 1
     elif race_cn == "印第安人/阿拉斯加人": input_vec[3] = 1
     # 治疗
-    if therapy_cn == "已接受": input_vec[4] = 1
+    if therapy_cn == "接受": input_vec[4] = 1
     if cea_cn == "阳性 (>5 ng/ml)": input_vec[5] = 1
     # 部位
     site_map = {"升结肠": 6, "结肠肝曲": 7, "横结肠": 8, "结肠脾曲": 9, "降结肠": 10, "乙状结肠": 11, "直乙交界部": 12}
