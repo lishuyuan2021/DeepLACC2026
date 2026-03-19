@@ -99,7 +99,7 @@ with st.sidebar:
     
     st.header("4. 病史特征")
     primary_only_cn = st.selectbox("是否仅该处唯一原发灶", ["是", "否"])
-    first_malig_cn = st.selectbox("此结肠癌是否为人生首位原发恶性肿瘤", ["是", "否"])
+    first_malig_cn = st.selectbox("此结肠癌是否为首个恶性肿瘤（无其他恶性肿瘤病史）", ["是", "否"])
 
 # 执行预测 (核心修正处)
 if st.sidebar.button("🚀 点击分析预后", type="primary"):
