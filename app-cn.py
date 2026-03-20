@@ -138,7 +138,7 @@ if st.sidebar.button("🚀 点击分析预后", type="primary"):
         rr = np.exp(log_h)
 
     # 分层数值 (锁定自 train_final 输出)
-    T_L, T_H = 0.8594, 1.2597 
+    T_L, T_H = 0.9495, 1.3921 
     if rr < T_L: g, color, sug = "低风险组 (Low)", "#28a745", "低危，预后预期较好。推荐按照标准随访频率监测即可。"
     elif rr <= T_H: g, color, sug = "中风险组 (Medium)", "#fd7e14", "中危，存在相关复发指标，建议加强影像学复查及血清肿瘤指标检测。"
     else: g, color, sug = "高风险组 (High)", "#dc3545", "高位！建议加强全身评估，强化后续管理方案，密切随访。"

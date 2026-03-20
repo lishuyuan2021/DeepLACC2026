@@ -123,7 +123,7 @@ if st.sidebar.button("🚀 Analyze Survival Risk", type="primary"):
         rr = np.exp(log_h)
 
     # Risk Stratification based on training 40%/80% percentiles
-    T_L, T_H = 0.859412, 1.259707 
+    T_L, T_H = 0.9495, 1.3921 
     if rr < T_L: group, color, suggestion = "Low Risk", "#28a745", "Recommend routine guidelines; standard follow-up."
     elif rr <= T_H: group, color, suggestion = "Medium Risk", "#fd7e14", "Close follow-up and follow-up examinations should be considered."
     else: group, color, suggestion = "High Risk", "#dc3545", "High risk! It is strongly recommended to provide appropriate postoperative care in accordance with the guidelines and the patient’s specific condition, and to conduct close follow-up."
