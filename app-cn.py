@@ -99,7 +99,7 @@ with st.sidebar:
     
     st.header("4. 病史特征")
     primary_only_cn = st.selectbox("是否仅该处唯一原发灶", ["是", "否"])
-    first_malig_cn = st.selectbox("此结肠癌是否为首个恶性肿瘤（无其他恶性肿瘤病史）", ["是", "否"])
+    first_malig_cn = st.selectbox("其他恶性肿瘤病史", ["无", "有"])
 
 # 执行预测 (核心修正处)
 if st.sidebar.button("🚀 点击分析预后", type="primary"):
@@ -118,7 +118,7 @@ if st.sidebar.button("🚀 点击分析预后", type="primary"):
     if site_cn in site_map: input_vec[site_map[site_cn]] = 1
     # [13-14] history
     if primary_only_cn == "是": input_vec[13] = 1
-    if first_malig_cn == "是": input_vec[14] = 1
+    if first_malig_cn == "无": input_vec[14] = 1
     # [15-18] Patho
     if deposits_cn == "有": input_vec[15] = 1
     input_vec[16] = (nodes_pos - scalers.loc['regional.nodes.positive', 'mean']) / scalers.loc['regional.nodes.positive', 'sd']
