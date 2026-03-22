@@ -95,12 +95,13 @@ with st.sidebar:
     st.header("1. 基本人口学信息")
     age = st.slider("患者确诊年龄", 18, 95, 60)
     race_cn = st.selectbox("患者种族", ["亚裔/太平洋岛民", "白种人", "黑种人", "印第安人/阿拉斯加人"])
-    
+    first_malig_cn = st.selectbox("恶性肿瘤病史", ["无", "有"])
+
     st.header("2. 临床诊断参数")
-    therapy_cn = st.selectbox("术后辅助化疗", ["未接受/拒绝", "接受"])
     cea_cn = st.selectbox("术前 CEA 状态", ["阴性", "阳性"])
-    pni_cn = st.selectbox("神经侵犯 (PNI)", ["无", "有"])
-    deposits_cn = st.selectbox("癌结节 (TD)", ["无", "有"])
+    site_cn = st.selectbox("肿瘤原发部位", ["盲肠", "升结肠", "结肠肝曲", "横结肠", 
+                                        "结肠脾曲", "降结肠", "乙状结肠", "直乙交界部"])
+    primary_only_cn = st.selectbox("是否仅该处唯一原发灶", ["是", "否"])
     
     st.header("3. 肿瘤病理特征")
     nodes_pos = st.number_input("阳性淋巴结数量", 0, 80, 1)
@@ -109,12 +110,12 @@ with st.sidebar:
         "pT4N+", "pT4N0", "ypT0-2N+", "ypT0-2N0", "ypT3N+", "ypT3N0", "ypT4N+", "ypT4N0"
     ])
     grade_cn = st.selectbox("组织分化等级", ["高分化", "中分化", "低分化/未分化"])
-    site_cn = st.selectbox("肿瘤原发部位", ["盲肠", "升结肠", "结肠肝曲", "横结肠", 
-                                        "结肠脾曲", "降结肠", "乙状结肠", "直乙交界部"])
+    pni_cn = st.selectbox("神经侵犯 (PNI)", ["无", "有"])
+    deposits_cn = st.selectbox("癌结节 (TD)", ["无", "有"])
+
     
-    st.header("4. 疾病背景")
-    primary_only_cn = st.selectbox("是否仅该处唯一原发灶", ["是", "否"])
-    first_malig_cn = st.selectbox("恶性肿瘤病史", ["无", "有"])
+    st.header("4. 术后治疗措施")
+    therapy_cn = st.selectbox("术后辅助化疗", ["未接受/拒绝", "接受"])
 
 # ==============================================================================
 # 4. 执行预测 (核心修改点：使用字段名对齐，防止解释错位)
@@ -171,10 +172,10 @@ if st.sidebar.button("🚀 点击分析预后", type="primary"):
         rr = np.exp(log_h)
 
     # 风险分层 (锁定值：代码1输出结果)
-    T_L, T_H = 0.9495, 1.3921 
-    if rr < T_L: g, color, sug = "低风险 (Low)", "#28a745", "推荐按指南常规随访。"
-    elif rr <= T_H: g, color, sug = "中风险 (Medium)", "#fd7e14", "建议加强随访频率及肿瘤标志物监测。"
-    else: g, color, sug = "高风险 (High)", "#dc3545", "高危！建议强化全身检查及后续治疗方案探讨。"
+    T_L, T_H = 0.9051, 1.1772 
+    if rr < T_L: g, color, sug = "低风险 (Low)", "#28a745", "低风险患者，预后在所有LACC中相对较好，推荐按并根据具体情况考虑是否后续治疗，定期随访复查。"
+    elif rr <= T_H: g, color, sug = "中风险 (Medium)", "#fd7e14", "中风险患者，建议依据指南及患者具体情况考虑后续治疗方案，同时强烈建议密切随访复查。"
+    else: g, color, sug = "高风险 (High)", "#dc3545", "高风险患者！强烈建议依据指南及患者具体情况考虑后续治疗，并密切随访复查，必要时完善全身检查。"
 
     surv_p = {t: (base_surv[str(t)] ** rr) * 100 for t in [12, 36, 60, 120]}
 

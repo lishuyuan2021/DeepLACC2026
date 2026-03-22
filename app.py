@@ -87,29 +87,29 @@ st.title("Prognosis Prediction System for Locally Advanced Colon Cancer (LACC)")
 st.markdown("Individualized risk calculation powered by **Native PyTorch DeepSurv**. Data Source: SEER database.")
 
 with st.sidebar:
-    st.header("1. Demographics")
+    st.header("1. Demographics & Clinical History")
     age = st.slider("Age at Diagnosis", 18, 95, 60)
     race = st.selectbox("Race", ["Asian/Pacific Islander", "White", "Black", "American Indian/Alaska Native"])
-    
-    st.header("2. Diagnosis & Pathology")
-    therapy = st.selectbox("Adjuvant Chemotherapy (AC)", ["Untreated/Refused", "Treated"])
+    first_malig = st.selectbox("Was colon cancer the FIRST primary cancer?", ["Yes", "No"])
+
+    st.header("2. Diagnosis")
     cea = st.selectbox("CEA Status (Pre-op)", ["Negative", "Positive"])
-    pni = st.selectbox("Perineural Invasion (PNI)", ["No", "Yes"])
-    deposits = st.selectbox("Tumor Deposits (TD)", ["No", "Yes"])
+    site = st.selectbox("Primary Site", ["Cecum", "Ascending Colon", "Hepatic Flexure", "Transverse Colon", 
+                                        "Splenic Flexure", "Descending Colon", "Sigmoid Colon", "Rectosigmoid Junction"])
+    primary_only = st.selectbox("Is this the ONLY primary site?", ["Yes", "No"])
     
-    st.header("3. Surgical Parameters")
+    st.header("3. Pathological Characteristics")
     nodes_pos = st.number_input("Positive Nodes Count", 0, 80, 1)
     nodes_exam = st.number_input("Total Examined Nodes", 1, 90, 15)
     tn_stage = st.selectbox("Combined TN Stage", [
         "pT4N+", "pT4N0", "ypT0-2N+", "ypT0-2N0", "ypT3N+", "ypT3N0", "ypT4N+", "ypT4N0"
     ])
     grade = st.selectbox("Histological Grade", ["Grade I (Well)", "Grade II (Moderate)", "Grade III/IV (Poor/Undiff)"])
-    site = st.selectbox("Primary Site", ["Cecum/Others", "Ascending Colon", "Hepatic Flexure", "Transverse Colon", 
-                                        "Splenic Flexure", "Descending Colon", "Sigmoid Colon", "Rectosigmoid Junction"])
+    pni = st.selectbox("Perineural Invasion (PNI)", ["No", "Yes"])
+    deposits = st.selectbox("Tumor Deposits (TD)", ["No", "Yes"])
     
-    st.header("4. Clinical History")
-    primary_only = st.selectbox("Is this the ONLY primary site?", ["Yes", "No"])
-    first_malig = st.selectbox("Was colon cancer the FIRST primary cancer?", ["Yes", "No"])
+    st.header("4. Postoperative Management")
+    therapy = st.selectbox("Adjuvant Chemotherapy (AC)", ["Untreated/Refused", "Treated"])
 
 # ==============================================================================
 # 4. Analysis Logic
@@ -164,10 +164,10 @@ if st.sidebar.button("🚀 Analyze Survival Risk", type="primary"):
         rr = np.exp(log_h)
 
     # Risk Stratification (From training percentiles)
-    T_L, T_H = 0.9495, 1.3921 
-    if rr < T_L: g, color, sug = "Low Risk", "#28a745", "Excellent prognosis; follow standard postoperative surveillance guidelines."
-    elif rr <= T_H: g, color, sug = "Medium Risk", "#fd7e14", "Consider intensive surveillance and frequent tumor marker monitoring."
-    else: g, color, sug = "High Risk", "#dc3545", "Critical! Multi-disciplinary management and intensive systemic follow-up are strongly recommended."
+    T_L, T_H = 0.9051, 1.1772 
+    if rr < T_L: g, color, sug = "Low Risk", "#28a745", "Patients with low-risk disease have a relatively favorable prognosis compared to all other LACC cases. It is recommended to consider whether to pursue further treatment based on individual circumstances and to undergo regular follow-up examinations."
+    elif rr <= T_H: g, color, sug = "Medium Risk", "#fd7e14", "For patients at moderate risk, it is recommended that follow-up treatment plans be determined based on clinical guidelines and the patient’s specific condition; close follow-up and regular checkups are strongly recommended."
+    else: g, color, sug = "High Risk", "#dc3545", "High-risk patients! It is strongly recommended that follow-up treatment be considered in accordance with guidelines and the patient’s specific condition, with close follow-up and regular check-ups, and a comprehensive physical examination if necessary."
 
     # OS Probabilities
     surv_p = {t: (base_surv[str(t)] ** rr) * 100 for t in [12, 36, 60, 120]}
