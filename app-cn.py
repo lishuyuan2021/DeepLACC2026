@@ -87,8 +87,8 @@ model, scalers, bg_data, base_surv, features_list, feature_labels_en = load_reso
 # ==============================================================================
 # 3. 页面布局与侧边栏
 # ==============================================================================
-st.set_page_config(page_title="LACC Prognosis System", layout="wide")
-st.title("局部晚期结肠癌 (LACC) 个体化生存预测工具")
+st.set_page_config(page_title="LACC Prognosis System", layout="wide",initial_sidebar_state="expanded")
+st.title("基于深度学习的局部晚期结肠癌 (LACC) 个体化生存预测工具")
 st.markdown("Developed by: 上海长海医院肛肠外科团队")
 
 with st.sidebar:
